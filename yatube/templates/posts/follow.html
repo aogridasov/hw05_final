@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Ваши подписки
+{% endblock %}
+
+{% block content %}
+<h1> Ваши подписки </h1>
+{% include 'posts/includes/switcher.html' %}
+
+
+{% load cache %}  
+{% cache 20 follow_index_page_cache request.user.username with page_obj %}
+
+  {% for post in page_obj %}
+    {% include 'includes/post.html' %} 
+    {% if not forloop.last %}<hr>{% endif %}
+  {% empty %}
+    Подписок нет!
+  {% endfor %}
+
+  {% include 'posts/includes/paginator.html' %}
+{% endcache %}
+
+{% endblock %}

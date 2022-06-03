@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+
+
+{% block title%}
+{% with request.resolver_match.view_name as view_name %}
+
+{% if view_name == 'posts:post_create'%}
+  Новый пост
+{% elif view_name == 'posts:post_edit' %}
+  Редактировать пост
+{% endif %}
+
+{% endwith %}
+{% endblock%}     
+
+
+{% block content %}
+{% with request.resolver_match.view_name as view_name %}
+
+{% if view_name == 'posts:post_create'%}
+  {% include 'includes/user_interface_form.html' with card_title='Новый пост' card_button='Сохранить' %}
+{% elif view_name == 'posts:post_edit' %}
+  {% include 'includes/user_interface_form.html' with card_title='Редактировать пост' card_button='Добавить' %}
+{% endif %}
+
+{% endwith %}
+{% endblock %}
