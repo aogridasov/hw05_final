@@ -99,3 +99,23 @@ class Follow(models.Model):
         related_name='following',
         on_delete=models.CASCADE,
     )
+
+    def __str__(self) -> str:
+        return f'{self.user} FOLLOWS {self.author}'
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author'],
+                condition=~models.Q('user'),
+                name='no_self_subscribe'
+            ),
+
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_subscribing'
+            )
+        ]
