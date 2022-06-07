@@ -8,9 +8,6 @@ from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
 
 
-
-
-
 def cache_clear(cache_key: str, user=None):
     key = make_template_fragment_key(cache_key, [user])
     cache.delete(key)
