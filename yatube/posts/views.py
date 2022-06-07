@@ -8,7 +8,7 @@ from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
 
 
-NUMBER_OF_POSTS_TO_SHOW = 10
+
 
 
 def cache_clear(cache_key: str, user=None):
@@ -16,11 +16,17 @@ def cache_clear(cache_key: str, user=None):
     cache.delete(key)
 
 
-def index(request):
-    post_list = Post.objects.all()
+def paginator(post_list, request):
+    NUMBER_OF_POSTS_TO_SHOW = 10
     paginator = Paginator(post_list, NUMBER_OF_POSTS_TO_SHOW)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    return page_obj
+
+
+def index(request):
+    post_list = Post.objects.all()
+    page_obj = paginator(post_list, request)
     context = {
         'page_obj': page_obj
     }
@@ -30,9 +36,7 @@ def index(request):
 def group_posts(request, slug):
     group = Group.objects.get(slug=slug)
     post_list = group.posts.all()
-    paginator = Paginator(post_list, NUMBER_OF_POSTS_TO_SHOW)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator(post_list, request)
     context = {
         'group': group,
         'page_obj': page_obj
@@ -40,14 +44,11 @@ def group_posts(request, slug):
     return render(request, 'posts/group_list.html', context)
 
 
-# Нужно соблюсти принцип DRY в плане применения паджинатора
 def profile(request, username):
     user = User.objects.get(username=username)
 
     post_list = user.posts.all()
-    paginator = Paginator(post_list, NUMBER_OF_POSTS_TO_SHOW)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator(post_list, request)
 
     if request.user.is_authenticated and Follow.objects.filter(
             user=request.user,
@@ -132,9 +133,7 @@ def follow_index(request):
         follows = user.follower.all()
         followed_authors = User.objects.filter(following__in=follows)
         post_list = Post.objects.filter(author__in=followed_authors)
-        paginator = Paginator(post_list, NUMBER_OF_POSTS_TO_SHOW)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
+        page_obj = paginator(post_list, request)
         context = {
             'page_obj': page_obj
         }

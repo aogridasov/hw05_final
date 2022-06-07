@@ -17,19 +17,18 @@ class PostsCacheTests(TestCase):
         cls.user = User.objects.create(username='dummy')
         cls.guest_client = Client()
 
-    def test_cache_works_with_posts_at_index_page(self):
-        """Кеширование списка постов корректно происходит
-        на главной странице"""
-
-        cached_post = Post.objects.create(
+        cls.cached_post = Post.objects.create(
             pk=1,
-            author=self.user,
+            author=cls.user,
             text='test_text'
         )
 
+    def test_cache_works_with_posts_at_index_page(self):
+        """Кеширование списка постов корректно происходит
+        на главной странице"""
         response_1 = self.guest_client.get(reverse('posts:index'))
 
-        cached_post.delete()
+        self.cached_post.delete()
         response_2 = self.guest_client.get(reverse('posts:index'))
 
         self.assertEqual(response_1.content, response_2.content)

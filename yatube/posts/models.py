@@ -108,9 +108,8 @@ class Follow(models.Model):
         verbose_name_plural = 'Подписки'
 
         constraints = [
-            models.UniqueConstraint(
-                fields=['author'],
-                condition=~models.Q('user'),
+            models.CheckConstraint(
+                check=~models.Q(author=models.F('user')),
                 name='no_self_subscribe'
             ),
 

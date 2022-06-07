@@ -172,14 +172,24 @@ class PaginatorViewsTest(TestCase):
             description='test description'
         )
 
+        cls.posts_list = []
         for i in range(1, 12):
-            Post.objects.create(
-                pk=i,
-                author=cls.user,
-                text='test_text' * 100,
-                group=cls.group
+            cls.posts_list.append(
+                Post(
+                    pk=i,
+                    author=cls.user,
+                    text='test_text' * 100,
+                    group=cls.group
+                )
             )
-            time.sleep(0.001)
+        Post.objects.bulk_create(cls.posts_list)
+
+        # sleep(0.001) был нужен для прошлой версии создания нескольких
+        # постов за раз, так как без задержки, они, если я правильно понял,
+        # создавались так быстро, что база данных не успевала понимать
+        # какой был первее и фикстуры получались рандомные,
+        # при каждом запуске тестов у первых по списку постов были разные pk.
+        # Спасибо за наводку на bulk_create! Я как-то пропустил этот вариант :)
 
     def test_first_page_contains_ten_records(self):
         """Паджинатор на первой странице в шаблонах index/group_list/profile
