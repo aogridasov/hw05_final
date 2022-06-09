@@ -1,24 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.core.cache import cache
-from django.core.cache.utils import make_template_fragment_key
-from django.core.paginator import Paginator
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
-
-
-def cache_clear(cache_key: str, user=None):
-    key = make_template_fragment_key(cache_key, [user])
-    cache.delete(key)
-
-
-def paginator(post_list, request):
-    NUMBER_OF_POSTS_TO_SHOW = 10
-    paginator = Paginator(post_list, NUMBER_OF_POSTS_TO_SHOW)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return page_obj
+from .utils import cache_clear, paginator
 
 
 def index(request):
@@ -31,7 +16,7 @@ def index(request):
 
 
 def group_posts(request, slug):
-    group = Group.objects.get(slug=slug)
+    group = get_object_or_404(Group, slug=slug)
     post_list = group.posts.all()
     page_obj = paginator(post_list, request)
     context = {
@@ -42,14 +27,14 @@ def group_posts(request, slug):
 
 
 def profile(request, username):
-    user = User.objects.get(username=username)
+    user = get_object_or_404(User, username=username)
 
     post_list = user.posts.all()
     page_obj = paginator(post_list, request)
 
     if request.user.is_authenticated and Follow.objects.filter(
             user=request.user,
-            author=User.objects.get(username=username)
+            author=user
     ).exists():
         following = True
     else:
@@ -64,7 +49,7 @@ def profile(request, username):
 
 
 def post_detail(request, post_id):
-    post = Post.objects.get(pk=post_id)
+    post = get_object_or_404(Post, pk=post_id)
     comments = post.comments.all()
     context = {
         'post': post,
@@ -91,7 +76,7 @@ def post_create(request):
 
 @login_required
 def post_edit(request, post_id):
-    post = Post.objects.get(pk=post_id)
+    post = get_object_or_404(Post, pk=post_id)
     form = PostForm(
         request.POST or None,
         files=request.FILES or None,
@@ -112,7 +97,7 @@ def post_edit(request, post_id):
 
 @login_required
 def add_comment(request, post_id):
-    post = Post.objects.get(pk=post_id)
+    post = get_object_or_404(Post, pk=post_id)
     form = CommentForm(request.POST or None)
     if form.is_valid():
         comment = form.save(commit=False)
@@ -143,7 +128,7 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
-    author = User.objects.get(username=username)
+    author = get_object_or_404(User, username=username)
     if request.user != author and Follow.objects.filter(
         user=request.user,
         author=author
@@ -160,7 +145,7 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     Follow.objects.filter(
         user=request.user,
-        author=User.objects.get(username=username)
+        author = get_object_or_404(User, username=username)
     ).delete()
 
     cache_clear('follow_index_page_cache', request.user)

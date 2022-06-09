@@ -1,15 +1,22 @@
+from distutils.debug import DEBUG
 import os
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '32s81)o!s#!qtb#++-%-@lc1&x6az8f)3-$$_ylg%g*m(qvbn='
+
 DEBUG = True
+
+
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '[::1]',
     'testserver',
+    'www.aogridasov.pythonanywhere.com',
+    'aogridasov.pythonanywhere.com',
 ]
+
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
