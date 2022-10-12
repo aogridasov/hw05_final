@@ -3,7 +3,7 @@ import os
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = '32s81)o!s#!qtb#++-%-@lc1&x6az8f)3-$$_ylg%g*m(qvbn='
+SECRET_KEY = 000  # insert your own secret key here
 
 DEBUG = True
 
