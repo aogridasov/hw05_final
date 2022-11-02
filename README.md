@@ -3,7 +3,7 @@ Yatube это платформа для ведения блогов. У поль
 
 Бэкенд для Yatube был написан мной в рамках учебного проекта, целью которого было изучение Django и принципов ORM. База данных на основе sqlite и Django ORM. Проект покрыт тестами и кешируется на встроенном кеш-бэкенде Django.
 
-**Стек:** Django, unittest, sqlite, Pillow, sorl-thumbnail, HTML
+**Технологии:** Django, unittest, sqlite, Pillow, sorl-thumbnail, HTML
 
 ## Установка
 
